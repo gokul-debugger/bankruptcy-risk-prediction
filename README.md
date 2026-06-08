@@ -1,136 +1,181 @@
 # Bankruptcy Risk Prediction
 
-## Overview
+A machine learning project for predicting corporate bankruptcy risk from financial ratios. The project uses the Polish Companies Bankruptcy dataset to build an early-warning risk model, compare multiple classifiers, and convert model probabilities into practical business risk segments.
 
-This project predicts corporate bankruptcy risk using financial indicators from Polish companies. The objective is to identify firms that may face financial distress and provide an early-warning risk assessment tool using machine learning.
+## Results Summary
 
-The project includes:
+| Best Model | Accuracy | Precision | Recall | F1 Score | ROC-AUC |
+|---|---:|---:|---:|---:|---:|
+| Tuned Random Forest | 95.98% | 66.51% | 33.25% | 44.34% | 90.24% |
 
-- Exploratory Data Analysis (EDA)
-- Data Cleaning & Preprocessing
-- Feature Engineering
-- Model Comparison
-- Hyperparameter Tuning
-- Business Risk Analysis
-- Executive Reporting
+Because bankruptcy is a rare event, this project does not rely on accuracy alone. The evaluation focuses on precision, recall, F1 score, and ROC-AUC to better understand how well the model identifies financially distressed companies.
 
----
+## Project Goals
+
+- Predict whether a company is at risk of bankruptcy
+- Handle a highly imbalanced financial-risk dataset
+- Compare multiple classical machine learning models
+- Tune a Random Forest classifier for stronger risk detection
+- Estimate bankruptcy probabilities for each company
+- Create business-friendly risk segments for monitoring and reporting
+- Summarize model findings in an executive-style notebook
 
 ## Dataset
 
+Dataset: Polish Companies Bankruptcy Dataset  
 Source: UCI Machine Learning Repository
 
-Dataset: Polish Companies Bankruptcy Dataset
+The dataset contains financial ratios from Polish companies collected across multiple bankruptcy forecasting horizons.
 
-The dataset contains financial ratios collected from Polish companies between 2000 and 2013.
+| Item | Value |
+|---|---:|
+| Records | 43,405 |
+| Financial indicators | 64 |
+| Healthy companies | 41,314 |
+| Bankrupt companies | 2,091 |
+| Bankruptcy rate | 4.82% |
 
-### Dataset Characteristics
+Target variable:
 
-- 43,405 company records
-- 64 financial indicators
-- Binary target variable
-  - 0 = Healthy Company
-  - 1 = Bankrupt Company
-
-The original dataset combines multiple forecasting periods ranging from one to five years before bankruptcy.
-
----
+| Class | Meaning |
+|---:|---|
+| 0 | Healthy company |
+| 1 | Bankrupt company |
 
 ## Project Structure
 
-text bankruptcy-risk-prediction/ │ ├── data/ ├── models/ ├── notebooks/ │   ├── 01_EDA.ipynb │   ├── 02_Preprocessing.ipynb │   ├── 03_Model_Comparison.ipynb │   ├── 04_Hyperparameter_Tuning.ipynb │   ├── 05_Business_Insights.ipynb │   └── 06_Executive_Report.ipynb │ ├── reports/ ├── requirements.txt └── README.md 
+```text
+bankruptcy-risk-prediction/
+├── data/
+│   ├── bankruptcy.csv
+│   ├── bankruptcy_processed.csv
+│   ├── bankruptcy_risk_scored.csv
+│   └── model_results.csv
+├── models/
+│   ├── random_forest_baseline.pkl
+│   └── random_forest_tuned.pkl
+├── notebooks/
+│   ├── 01_EDA.ipynb
+│   ├── 02_Preprocessing.ipynb
+│   ├── 03_Model_Comparison.ipynb
+│   ├── 04_Hyperparameter_Tuning.ipynb
+│   ├── 05_Business_Insights.ipynb
+│   └── 06_Executive_Report.ipynb
+├── requirements.txt
+└── README.md
+```
 
----
+## Notebook Workflow
 
-## Workflow
+1. `01_EDA.ipynb`  
+   Explores data quality, class imbalance, forecasting horizons, feature distributions, outliers, correlations, and PCA structure.
 
-### 1. Exploratory Data Analysis
+2. `02_Preprocessing.ipynb`  
+   Handles missing values, treats outliers, selects useful features, and saves the processed dataset.
 
-- Class distribution analysis
-- Correlation analysis
-- Outlier detection
-- PCA visualization
-- Financial ratio exploration
+3. `03_Model_Comparison.ipynb`  
+   Compares Logistic Regression, SVM, Random Forest, and Gradient Boosting.
 
-### 2. Data Preprocessing
+4. `04_Hyperparameter_Tuning.ipynb`  
+   Tunes the Random Forest model and evaluates the final classifier.
 
-- Missing value handling
-- Outlier treatment
-- Feature engineering
-- Feature selection
-- Dataset preparation
+5. `05_Business_Insights.ipynb`  
+   Analyzes feature importance, scores bankruptcy risk, creates risk segments, and identifies the highest-risk companies.
 
-### 3. Model Development
+6. `06_Executive_Report.ipynb`  
+   Summarizes the final results for a business audience.
 
-The following algorithms were evaluated:
+## Model Comparison
 
-- Logistic Regression
-- Support Vector Machine (SVM)
-- Random Forest
-- Gradient Boosting
+| Model | Accuracy | Precision | Recall | F1 Score | ROC-AUC |
+|---|---:|---:|---:|---:|---:|
+| Random Forest | 95.98% | 66.51% | 33.25% | 44.34% | 90.24% |
+| Gradient Boosting | 95.84% | 76.15% | 19.86% | 31.50% | 87.89% |
+| SVM | 72.02% | 11.55% | 72.25% | 19.91% | 79.64% |
+| Logistic Regression | 73.07% | 10.56% | 61.48% | 18.02% | 74.46% |
 
-### 4. Hyperparameter Tuning
+The tuned Random Forest provided the best overall balance for this project. SVM captured more bankrupt companies, but its low precision would create many false alarms. Gradient Boosting was more precise, but missed more bankrupt companies.
 
-Random Forest was optimized using GridSearchCV.
+## Final Model
 
-### 5. Business Insights
+The final model is a balanced Random Forest classifier:
 
-- Feature importance analysis
-- Bankruptcy risk scoring
-- Risk segmentation
-- Executive-level insights
+```text
+RandomForestClassifier(
+    class_weight="balanced",
+    max_depth=20,
+    min_samples_leaf=2,
+    min_samples_split=10,
+    n_estimators=500,
+    random_state=42
+)
+```
 
----
+Why Random Forest:
 
-## Best Model Performance
+- Handles nonlinear relationships between financial ratios
+- Works well with tabular financial data
+- Supports class weighting for imbalance
+- Provides feature importance for interpretation
+- Produces bankruptcy probabilities for risk segmentation
 
-### Tuned Random Forest
+## Key Predictors
 
-| Metric | Score |
-|----------|----------:|
-| Accuracy | 0.95 |
-| Precision | 0.44 |
-| Recall | 0.47 |
-| F1 Score | 0.45 |
-| ROC-AUC | 0.905 |
-
-### Classification Report
-
-text               precision    recall  f1-score  Healthy          0.97      0.97      0.97 Bankrupt         0.44      0.47      0.45 
-
-The model successfully identifies nearly half of all bankrupt companies while maintaining strong overall predictive performance.
-
----
-
-## Key Findings
-
-Top bankruptcy predictors identified by the Random Forest model:
+Top bankruptcy predictors identified by the tuned Random Forest model:
 
 | Feature | Importance |
-|----------|----------:|
+|---|---:|
 | A27 | 0.1409 |
 | A24 | 0.0934 |
 | A46 | 0.0610 |
 | A26 | 0.0586 |
 | A6 | 0.0493 |
 
-These variables showed the strongest influence on bankruptcy prediction.
+The dataset uses anonymized financial-ratio names, so these features are interpreted as model drivers rather than directly named accounting variables.
 
----
+## Business Risk Segmentation
 
-## Risk Segmentation
-
-Companies were grouped according to predicted bankruptcy probability.
+The tuned model assigns bankruptcy probability scores and groups companies into practical monitoring bands.
 
 | Risk Level | Companies |
-|------------|-----------:|
+|---|---:|
 | Low Risk | 36,701 |
 | Medium Risk | 3,191 |
 | High Risk | 1,913 |
 
-This segmentation can be used as an early-warning financial monitoring framework.
+Example use cases:
 
----
+- Prioritize companies for financial review
+- Flag high-risk accounts for credit monitoring
+- Support portfolio risk analysis
+- Create executive-level early-warning reports
+
+## Key Learning Points
+
+- Bankruptcy prediction is highly imbalanced, so accuracy can be misleading.
+- Recall is important for catching distressed companies, but precision matters to avoid excessive false alarms.
+- ROC-AUC helps evaluate how well the model ranks risk across thresholds.
+- Probability-based risk segmentation is more useful for business monitoring than a single binary prediction.
+- Interpretability matters in financial machine learning because stakeholders need to understand risk drivers.
+
+## How to Run
+
+Create and activate a virtual environment:
+
+```bash
+python3.12 -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+Start Jupyter:
+
+```bash
+jupyter notebook
+```
+
+Run the notebooks in order from `01_EDA.ipynb` to `06_Executive_Report.ipynb`.
 
 ## Technologies Used
 
@@ -139,33 +184,26 @@ This segmentation can be used as an early-warning financial monitoring framework
 - NumPy
 - Matplotlib
 - Seaborn
-- Scikit-Learn
+- Scikit-learn
+- Joblib
 - Jupyter Notebook
 
----
+## Limitations
 
-## Model Files
-
-The repository includes trained model artifacts inside the models/ directory.
-
-These .pkl files are provided for convenience and reproducibility.
-
-They are not required to run the project. Running the notebooks will retrain the models and regenerate the files automatically.
-
----
+- The dataset is historical and may not reflect current financial reporting behavior.
+- The model is a decision-support tool, not a replacement for financial due diligence.
+- The bankruptcy class is rare, so threshold tuning should depend on the business cost of false positives and false negatives.
+- Feature names are anonymized financial indicators, which limits direct financial interpretation.
 
 ## Future Improvements
 
-- XGBoost implementation
-- LightGBM implementation
-- SHAP explainability
-- Time-series bankruptcy forecasting
-- Model deployment using Streamlit
-
----
+- Add XGBoost or LightGBM
+- Add SHAP explanations for model interpretability
+- Tune the decision threshold using business cost assumptions
+- Build a Streamlit dashboard for interactive risk scoring
+- Add a model card documenting intended use and limitations
 
 ## Author
 
-Gokul
-
-GitHub: https://github.com/gokul-debugger
+Gokul  
+GitHub: [gokul-debugger](https://github.com/gokul-debugger)
